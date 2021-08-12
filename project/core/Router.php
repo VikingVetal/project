@@ -1,51 +1,38 @@
 <?php
 
 namespace Core;
-use App\Controllers\Index;
-use App\Controllers\About;
-use App\Controllers\Gallery;
+
+
+use App\controllers\ErrorPage404;
 
 final class Router
 {
-
-    private $route;
-
-    function __construct(){
-        // Получаем конфигурацию из файла.
-        $this->route =$_SERVER["PATH_INFO"];
-    }
-
-    public function getURI()
+    private $href;
+    public function __construct()
     {
-        if (!empty($_SERVER['PATH_INFO'])) {
-            return trim($_SERVER['PATH_INFO'], '/');
-        }
+        $this->href = $_SERVER["PATH_INFO"] ?? NULL; // без '?? NULL' выдает ошибку, а так всё работает
     }
 
     public function run()
     {
-        $uri = $this->getURI();
+        if($this->href){
+            $classNamespace = 'App\\Controllers\\' . ucfirst(ltrim($this->href, '/'));
 
-        foreach ($this->route as $pattern => $routes) {
-            if (preg_match("~$pattern~", $uri)) {
-                $internalRoute = preg_replace("~$pattern~", $routes, $uri);
-                $segments = explode('/', $internalRoute);
-                $controller = ucfirst(array_shift($segments)) . 'Controller';
-
-                $action = 'action' . ucfirst(array_shift($segments));
-                $parameters = $segments;
-
-                $controllerFile = ROOT . '../app/controllers/' . $controller . '.php';
-                if (file_exists($controllerFile)) {
-                    include($controllerFile);
-                }
+            if(class_exists($classNamespace)){
+                $classObj = new $classNamespace;
+            } else {
+                $classObj = new ErrorPage404();
             }
+        }else{
+
+            $classObj = new \App\Controllers\Index;
         }
+        $classObj->index();
     }
 }
 
-//    private $href;
-//    public function __construct()
-//    {
-//        $this->href = $_SERVER["PATH_INFO"];
-//    }
+
+?>
+
+
+
