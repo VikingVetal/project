@@ -7,5 +7,10 @@ class Gallery{
         echo ' Мы сейчас на странице <b>Gallery</b>, перейдите на страницу<a href="About">About</a>
 ';
     }
+
+    public function index()
+    {
+        print_r('Gallery');
+    }
 }
 ?>
