@@ -2,7 +2,7 @@
 
 
 namespace App\controllers;
-
+use Core\View;
 
 class ErrorPage404
 {
